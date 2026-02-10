@@ -4,19 +4,11 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import OpenAI from "openai";
 
-// Initialize OpenAI with error handling
-let openai: OpenAI;
-try {
-  openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-} catch (error) {
-  console.error("OpenAI initialization error:", error);
-}
+export const runtime = "nodejs"; // REQUIRED for OpenAI
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
+    // 🔐 Auth check
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -25,9 +17,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get user from database
+    // 👤 User lookup
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
+      where: { email: session.user.email },
     });
 
     if (!user) {
@@ -37,105 +29,79 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check credits
     if (user.credits <= 0) {
       return NextResponse.json(
-        { 
-          error: "You're out of credits! You have 0 credits remaining.",
-          credits: 0
-        },
+        { error: "You're out of credits!", credits: 0 },
         { status: 403 }
       );
     }
 
-    // Parse request body
+    // 📥 Request body
     const { prompt, type, tone, length } = await request.json();
 
     if (!prompt?.trim()) {
       return NextResponse.json(
-        { error: "Please enter a prompt to generate content." },
+        { error: "Please enter a prompt." },
         { status: 400 }
       );
     }
 
-    // Check if OpenAI is initialized
-    if (!openai) {
+    // ✅ Initialize OpenAI AT RUNTIME
+    if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
-        { error: "AI service is not configured. Please check OpenAI API key." },
+        { error: "OpenAI API key is missing on server." },
         { status: 500 }
       );
     }
 
-    // Prepare system prompt
-    const systemPrompt = `You are a professional content writer. Generate ${type || "blog"} content in a ${tone || "professional"} tone. 
-    Make it ${length || "medium"} length. Be creative, engaging, and informative. 
-    Format the response with proper paragraphs and structure.`;
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
 
-    // Call OpenAI API
+    const systemPrompt = `You are a professional content writer. Generate ${type || "blog"} content in a ${tone || "professional"} tone. 
+Make it ${length || "medium"} length. Be creative, engaging, and informative.`;
+
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // Use gpt-3.5-turbo for lower cost
+      model: "gpt-3.5-turbo",
       messages: [
         { role: "system", content: systemPrompt },
-        { role: "user", content: prompt }
+        { role: "user", content: prompt },
       ],
-      max_tokens: length === "short" ? 300 : length === "medium" ? 600 : 1000,
+      max_tokens:
+        length === "short" ? 300 : length === "medium" ? 600 : 1000,
       temperature: 0.7,
     });
 
-    const generatedContent = completion.choices[0]?.message?.content || "";
+    const content = completion.choices[0]?.message?.content ?? "";
 
-    // Save generation to database
+    // 💾 Save result
     await prisma.generation.create({
       data: {
-        title: prompt.substring(0, 50) + (prompt.length > 50 ? "..." : ""),
-        content: generatedContent,
+        title: prompt.slice(0, 50),
+        content,
         type: type || "blog",
         tone: tone || "professional",
         length: length || "medium",
         userId: user.id,
-      }
+      },
     });
 
-    // Deduct credit
+    // 💳 Deduct credit
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
-      data: { credits: { decrement: 1 } }
+      data: { credits: { decrement: 1 } },
     });
 
     return NextResponse.json({
-      content: generatedContent,
+      content,
       credits: updatedUser.credits,
-      message: "Content generated successfully!",
-      length: generatedContent.length
+      message: "Content generated successfully",
     });
-
   } catch (error: any) {
     console.error("Generation API error:", error);
-    
-    // Provide helpful error messages
-    if (error.code === "insufficient_quota") {
-      return NextResponse.json(
-        { error: "OpenAI API quota exceeded. Please check your billing." },
-        { status: 500 }
-      );
-    }
-    
-    if (error.code === "invalid_api_key") {
-      return NextResponse.json(
-        { error: "Invalid OpenAI API key. Please check your .env.local file." },
-        { status: 500 }
-      );
-    }
-
-    if (error.message?.includes("API key")) {
-      return NextResponse.json(
-        { error: "Missing OpenAI API key. Please add OPENAI_API_KEY to .env.local" },
-        { status: 500 }
-      );
-    }
 
     return NextResponse.json(
-      { error: `Failed to generate content: ${error.message || "Unknown error"}` },
+      { error: error.message || "Failed to generate content" },
       { status: 500 }
     );
   }
