@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
-import { FaHome, FaInfoCircle, FaLayout, FaMagic, FaSignOutAlt } from "react-icons/fa";
+import { FaHome, FaInfoCircle, FaTachometerAlt, FaMagic, FaSignOutAlt } from "react-icons/fa";
 
 export default function Navbar() {
     const { data: session } = useSession();
@@ -39,7 +39,7 @@ export default function Navbar() {
                         {session ? (
                             <>
                                 <Link href="/dashboard" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-1">
-                                    <FaLayout className="text-lg" />
+                                    <FaTachometerAlt className="text-lg" />
                                     Dashboard
                                 </Link>
                                 <Link href="/generate" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-1">
@@ -102,28 +102,36 @@ export default function Navbar() {
             {isMenuOpen && (
                 <div className="md:hidden bg-white border-b border-gray-200">
                     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                        <Link href="/" className="block text-gray-700 hover:text-indigo-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium">
+                        <Link href="/" className="block text-gray-700 hover:text-indigo-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium flex items-center gap-2">
+                            <FaHome />
                             Home
                         </Link>
-                        <Link href="/about" className="block text-gray-700 hover:text-indigo-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium">
+                        <Link href="/about" className="block text-gray-700 hover:text-indigo-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium flex items-center gap-2">
+                            <FaInfoCircle />
                             About
                         </Link>
 
                         {session ? (
                             <>
-                                <Link href="/dashboard" className="block text-gray-700 hover:text-indigo-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium">
+                                <Link href="/dashboard" className="block text-gray-700 hover:text-indigo-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium flex items-center gap-2">
+                                    <FaTachometerAlt />
                                     Dashboard
                                 </Link>
-                                <Link href="/generate" className="block text-gray-700 hover:text-indigo-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium">
+                                <Link href="/generate" className="block text-gray-700 hover:text-indigo-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium flex items-center gap-2">
+                                    <FaMagic />
                                     Generate
                                 </Link>
-                                <Link href="/profile" className="block text-gray-700 hover:text-indigo-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium">
+                                <Link href="/profile" className="block text-gray-700 hover:text-indigo-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium flex items-center gap-2">
+                                    <div className="h-6 w-6 rounded-full overflow-hidden border border-gray-200">
+                                        <img src={userImage} alt="" className="h-full w-full object-cover" />
+                                    </div>
                                     My Profile
                                 </Link>
                                 <button
                                     onClick={() => signOut({ callbackUrl: "/" })}
-                                    className="w-full text-left block text-red-600 hover:bg-red-50 px-3 py-2 rounded-md text-base font-medium"
+                                    className="w-full text-left block text-red-600 hover:bg-red-50 px-3 py-2 rounded-md text-base font-medium flex items-center gap-2"
                                 >
+                                    <FaSignOutAlt />
                                     Sign Out
                                 </button>
                             </>

@@ -13,10 +13,8 @@ export default async function HomePage() {
       <main className="max-w-6xl mx-auto px-6 py-16">
         <div className="text-center">
           <h1 className="text-5xl md:text-7xl font-bold text-gray-900 leading-tight">
-            Generate Amazing Content
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
-              With AI Power
-            </span>
+            <span className="text-indigo-600">content.AI</span>
+            <span className="block mt-2">Generate Amazing Content</span>
           </h1>
 
           <p className="mt-6 text-xl text-gray-600 max-w-2xl mx-auto">
