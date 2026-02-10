@@ -27,41 +27,28 @@ export default function DashboardPage() {
     }
   }, [status, router]);
 
-  // Load mock data
+  // Load real data
   useEffect(() => {
-    if (session?.user) {
-      // Mock data for now
-      const mockGenerations: Generation[] = [
-        {
-          id: "1",
-          title: "Blog post about renewable energy",
-          type: "blog",
-          tone: "professional",
-          length: "medium",
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: "2",
-          title: "Twitter thread on AI advancements",
-          type: "twitter",
-          tone: "casual",
-          length: "short",
-          createdAt: new Date(Date.now() - 86400000).toISOString()
-        },
-        {
-          id: "3",
-          title: "Product description for smartwatch",
-          type: "product",
-          tone: "persuasive",
-          length: "short",
-          createdAt: new Date(Date.now() - 172800000).toISOString()
+    async function fetchGenerations() {
+      try {
+        const response = await fetch("/api/user/generations");
+        if (response.ok) {
+          const data = await response.json();
+          setGenerations(data);
         }
-      ];
-      
-      setGenerations(mockGenerations);
+      } catch (error) {
+        console.error("Failed to fetch generations", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (session?.user) {
+      fetchGenerations();
+    } else if (status === "unauthenticated") {
       setLoading(false);
     }
-  }, [session]);
+  }, [session, status]);
 
   if (status === "loading" || loading) {
     return (
@@ -77,7 +64,7 @@ export default function DashboardPage() {
 
   // Calculate stats
   const totalGenerations = generations.length;
-  const recentGenerations = generations.filter(g => 
+  const recentGenerations = generations.filter(g =>
     new Date(g.createdAt) > new Date(Date.now() - 7 * 86400000)
   ).length;
 
@@ -94,7 +81,7 @@ export default function DashboardPage() {
               Manage your generated content
             </p>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <Link
               href="/generate"
@@ -102,7 +89,7 @@ export default function DashboardPage() {
             >
               Generate New
             </Link>
-            
+
             <button
               onClick={() => router.push("/api/auth/signout")}
               className="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
@@ -125,7 +112,7 @@ export default function DashboardPage() {
               All your created content
             </div>
           </div>
-          
+
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="text-3xl font-bold text-green-600 mb-2">
               {recentGenerations}
@@ -150,7 +137,7 @@ export default function DashboardPage() {
               + Create New
             </Link>
           </div>
-          
+
           {generations.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">📝</div>

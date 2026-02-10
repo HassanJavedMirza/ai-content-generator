@@ -98,6 +98,7 @@ export default function RegisterPage() {
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               placeholder="John Doe"
               required
+              style={{color:"black"}}
             />
           </div>
 
@@ -126,6 +127,7 @@ export default function RegisterPage() {
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               placeholder="••••••••"
               required
+              style={{color:"black"}}
             />
             <p className="mt-1 text-xs text-gray-500">Minimum 6 characters</p>
           </div>
@@ -141,6 +143,7 @@ export default function RegisterPage() {
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               placeholder="••••••••"
               required
+              style={{color:"black"}}
             />
           </div>
 

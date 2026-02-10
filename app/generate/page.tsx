@@ -66,7 +66,7 @@ export default function GeneratePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (userCredits <= 0) {
       alert("You don't have enough credits. Please upgrade your plan.");
       return;
@@ -97,7 +97,7 @@ export default function GeneratePage() {
 
       setGeneratedContent(data.content);
       setUserCredits(data.credits); // Update credits count
-      
+
     } catch (error: any) {
       console.error("Generation error:", error);
       alert(error.message || "Something went wrong. Please try again.");
@@ -111,32 +111,7 @@ export default function GeneratePage() {
     alert("Copied to clipboard!");
   };
 
-  const handleSave = async () => {
-    if (!generatedContent.trim()) return;
-    
-    try {
-      const response = await fetch("/api/generate/save", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: formData.prompt.substring(0, 50) + "...",
-          content: generatedContent,
-          type: formData.type,
-          tone: formData.tone,
-          length: formData.length
-        }),
-      });
 
-      if (response.ok) {
-        alert("Content saved successfully!");
-      }
-    } catch (error) {
-      console.error("Save error:", error);
-      alert("Failed to save content");
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 md:p-8">
@@ -151,7 +126,7 @@ export default function GeneratePage() {
               Create amazing content in seconds
             </p>
           </div>
-          
+
           <div className="flex items-center gap-4">
             {/* <div className="bg-white px-4 py-2 rounded-lg shadow-sm">
               <div className="text-sm text-gray-600">Credits remaining</div>
@@ -159,14 +134,14 @@ export default function GeneratePage() {
                 {userCredits}
               </div>
             </div> */}
-            
+
             <Link
               href="/dashboard"
               className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
             >
               Dashboard
             </Link>
-            
+
             <button
               onClick={() => router.push("/api/auth/signout")}
               className="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
@@ -183,7 +158,7 @@ export default function GeneratePage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Generate New Content
           </h2>
-          
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Prompt */}
             <div>
@@ -192,11 +167,11 @@ export default function GeneratePage() {
               </label>
               <textarea
                 value={formData.prompt}
-                onChange={(e) => setFormData({...formData, prompt: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, prompt: e.target.value })}
                 className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
                 placeholder="Example: A blog post about the benefits of renewable energy for homeowners..."
                 required
-                style={{color:"black"}}
+                style={{ color: "black" }}
               />
               <p className="mt-2 text-sm text-gray-500">
                 Be specific for better results!
@@ -211,9 +186,9 @@ export default function GeneratePage() {
                 </label>
                 <select
                   value={formData.type}
-                  onChange={(e) => setFormData({...formData, type: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  style={{color:"black"}}
+                  style={{ color: "black" }}
                 >
                   {contentTypes.map((type) => (
                     <option key={type.value} value={type.value}>
@@ -229,9 +204,9 @@ export default function GeneratePage() {
                 </label>
                 <select
                   value={formData.tone}
-                  onChange={(e) => setFormData({...formData, tone: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, tone: e.target.value })}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  style={{color:"black"}}
+                  style={{ color: "black" }}
                 >
                   {tones.map((tone) => (
                     <option key={tone.value} value={tone.value}>
@@ -247,9 +222,9 @@ export default function GeneratePage() {
                 </label>
                 <select
                   value={formData.length}
-                  onChange={(e) => setFormData({...formData, length: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, length: e.target.value })}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  style={{color:"black"}}
+                  style={{ color: "black" }}
                 >
                   {lengths.map((length) => (
                     <option key={length.value} value={length.value}>
@@ -293,7 +268,7 @@ export default function GeneratePage() {
             <h2 className="text-2xl font-bold text-gray-900">
               Generated Content
             </h2>
-            
+
             {generatedContent && (
               <div className="flex gap-2">
                 <button
@@ -302,16 +277,10 @@ export default function GeneratePage() {
                 >
                   <span>📋</span> Copy
                 </button>
-                <button
-                  onClick={handleSave}
-                  className="px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 flex items-center gap-2"
-                >
-                  <span>💾</span> Save
-                </button>
               </div>
             )}
           </div>
-          
+
           <div className="h-[500px] overflow-y-auto border border-gray-200 rounded-lg p-4">
             {generatedContent ? (
               <div className="prose max-w-none">
@@ -335,7 +304,7 @@ export default function GeneratePage() {
                 </div>
               </div>
             )}
-            
+
             {loading && (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center">

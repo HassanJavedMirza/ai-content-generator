@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import OpenAI from "openai";
+import { useSession } from "next-auth/react"
 
 export const runtime = "nodejs"; // REQUIRED for OpenAI
 
