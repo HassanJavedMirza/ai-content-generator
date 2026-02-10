@@ -55,8 +55,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const apiKey = process.env.OPENAI_API_KEY;
+    console.log("DEBUG: API Key length:", apiKey.length);
+    console.log("DEBUG: API Key start:", apiKey.substring(0, 7));
+
+    if (!apiKey.startsWith("sk-")) {
+      console.error("DEBUG: API Key does not start with 'sk-'! Actual start:", apiKey.substring(0, 10));
+    }
+
     const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
+      apiKey: apiKey,
     });
 
     const systemPrompt = `You are a professional content writer. Generate ${type || "blog"} content in a ${tone || "professional"} tone. 
