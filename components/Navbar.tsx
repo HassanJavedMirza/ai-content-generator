@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
+import { FaHome, FaInfoCircle, FaLayout, FaMagic, FaSignOutAlt } from "react-icons/fa";
 
 export default function Navbar() {
     const { data: session } = useSession();
@@ -26,19 +27,23 @@ export default function Navbar() {
 
                     {/* Desktop Menu */}
                     <div className="hidden md:flex items-center space-x-4">
-                        <Link href="/" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <Link href="/" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-1">
+                            <FaHome className="text-lg" />
                             Home
                         </Link>
-                        <Link href="/about" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <Link href="/about" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-1">
+                            <FaInfoCircle className="text-lg" />
                             About
                         </Link>
 
                         {session ? (
                             <>
-                                <Link href="/dashboard" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+                                <Link href="/dashboard" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-1">
+                                    <FaLayout className="text-lg" />
                                     Dashboard
                                 </Link>
-                                <Link href="/generate" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+                                <Link href="/generate" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-1">
+                                    <FaMagic className="text-lg" />
                                     Generate
                                 </Link>
 

@@ -71,34 +71,6 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 md:p-8">
       {/* Header */}
-      <header className="max-w-6xl mx-auto mb-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-              My Dashboard
-            </h1>
-            <p className="text-gray-600 mt-2">
-              Manage your generated content
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Link
-              href="/generate"
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-            >
-              Generate New
-            </Link>
-
-            <button
-              onClick={() => router.push("/api/auth/signout")}
-              className="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </header>
 
       <div className="max-w-6xl mx-auto">
         {/* Stats Cards */}
