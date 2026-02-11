@@ -5,7 +5,7 @@ export async function GET() {
   try {
     if (!process.env.HUGGINGFACE_API_KEY) {
       return NextResponse.json(
-        { error: "HUGGINGFACE_API_KEY is not set in .env.local" },
+        { error: "HUGGINGFACE_API_KEY is not configured in environment variables." },
         { status: 500 }
       );
     }

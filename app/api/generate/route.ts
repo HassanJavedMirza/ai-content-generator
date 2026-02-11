@@ -46,10 +46,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ✅ Initialize Hugging Face Inference AT RUNTIME
     if (!process.env.HUGGINGFACE_API_KEY) {
       return NextResponse.json(
-        { error: "Hugging Face API key is missing on server. Please add HUGGINGFACE_API_KEY to your .env.local file." },
+        { error: "HUGGINGFACE_API_KEY is not configured. If this is a live server, please add it to your environment variables (e.g. in Vercel settings)." },
         { status: 500 }
       );
     }
