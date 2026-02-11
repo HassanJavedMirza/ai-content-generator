@@ -3,16 +3,17 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-    const envKeys = Object.keys(process.env).filter(k =>
-        k.includes("HF") || k.includes("HUGGING") || k.includes("OPENAI") || k.includes("DATABASE")
-    );
+    const hKeys = Object.keys(process.env).filter(k => k.startsWith("H")).reduce((acc, k) => {
+        acc[k] = process.env[k] ? process.env[k]!.substring(0, 4) + "..." : "empty";
+        return acc;
+    }, {} as any);
 
     return NextResponse.json({
-        has_hf_key: !!process.env.HUGGINGFACE_API_KEY,
-        hf_key_prefix: process.env.HUGGINGFACE_API_KEY ? process.env.HUGGINGFACE_API_KEY.substring(0, 5) + "..." : "none",
-        detected_keys: envKeys,
+        has_any_hf_key: !!(process.env.HUGGINGFACE_API_KEY || process.env.HF_TOKEN || process.env.HF_API_KEY),
+        detected_h_keys: hKeys,
         node_env: process.env.NODE_ENV,
         time: new Date().toISOString(),
-        instructions: "If has_hf_key is false, but detected_keys shows the key, there is a spelling mismatch. If detected_keys is empty, Vercel is NOT passing the variables to this build."
+        build_id: process.env.NEXT_PUBLIC_VERCEL_URL || "production",
+        instructions: "Check 'detected_h_keys'. If the name you added to Vercel isn't there, Vercel is NOT passing it. If it IS there but has_any_hf_key is false, you probably named it something unusual. Let me know the name you see!"
     });
 }
