@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { HfInference } from "@huggingface/inference";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
