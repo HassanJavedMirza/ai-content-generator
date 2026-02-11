@@ -47,11 +47,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const hfKey = process.env.HUGGINGFACE_API_KEY || process.env.HF_TOKEN || process.env.HF_API_KEY;
+    const hfKey = process.env.HUGGINGFACE_API_KEY ||
+      process.env.HF_TOKEN ||
+      process.env.HF_API_KEY ||
+      process.env.AI_TOKEN;
 
     if (!hfKey) {
       return NextResponse.json(
-        { error: "Hugging Face API key is not configured. We checked HUGGINGFACE_API_KEY, HF_TOKEN, and HF_API_KEY. Please ensure one is set in Vercel." },
+        { error: "Hugging Face API key is not configured. We checked HUGGINGFACE_API_KEY, HF_TOKEN, HF_API_KEY, and AI_TOKEN." },
         { status: 500 }
       );
     }
