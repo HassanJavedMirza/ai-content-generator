@@ -1,36 +1,34 @@
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
+import { HfInference } from "@huggingface/inference";
 
 export async function GET() {
   try {
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env.HUGGINGFACE_API_KEY) {
       return NextResponse.json(
-        { error: "OPENAI_API_KEY is not set in .env.local" },
+        { error: "HUGGINGFACE_API_KEY is not set in .env.local" },
         { status: 500 }
       );
     }
 
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+    const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
     // Simple test request
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: "Say 'Hello, World!'" }],
-      max_tokens: 10,
+    const response = await hf.chatCompletion({
+      model: "mistralai/Mistral-7B-Instruct-v0.2",
+      messages: [{ role: "user", content: "Say 'Hello from Hugging Face!'" }],
+      max_tokens: 20,
     });
 
     return NextResponse.json({
       success: true,
-      message: completion.choices[0]?.message?.content || "No response",
-      model: completion.model
+      message: response.choices[0]?.message?.content || "No response",
+      model: "Mistral-7B-Instruct-v0.2"
     });
   } catch (error: any) {
+    console.error("HF Test Error:", error);
     return NextResponse.json({
       error: error.message,
-      code: error.code,
-      type: error.type
+      type: error.constructor.name
     }, { status: 500 });
   }
 }

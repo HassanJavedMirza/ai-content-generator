@@ -42,6 +42,28 @@ export default function GeneratePage() {
     length: "medium"
   });
 
+  const [imageLoading, setImageLoading] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState("");
+
+  const handleGenerateImage = async () => {
+    if (!generatedContent) return;
+    setImageLoading(true);
+    try {
+      const resp = await fetch("/api/generate/image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: formData.prompt }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || "Failed to generate image");
+      setGeneratedImage(data.image);
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setImageLoading(false);
+    }
+  };
+
   // Check authentication
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -111,6 +133,16 @@ export default function GeneratePage() {
     alert("Copied to clipboard!");
   };
 
+  const handleDownload = () => {
+    const blob = new Blob([generatedContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `generation-${new Date().getTime()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
 
 
   return (
@@ -133,10 +165,7 @@ export default function GeneratePage() {
               <textarea
                 value={formData.prompt}
                 onChange={(e) => setFormData({ ...formData, prompt: e.target.value })}
-                className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-                placeholder="Example: A blog post about the benefits of renewable energy for homeowners..."
-                required
-                style={{ color: "black" }}
+                className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none text-gray-900"
               />
               <p className="mt-2 text-sm text-gray-500">
                 Be specific for better results!
@@ -152,8 +181,7 @@ export default function GeneratePage() {
                 <select
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  style={{ color: "black" }}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900"
                 >
                   {contentTypes.map((type) => (
                     <option key={type.value} value={type.value}>
@@ -170,8 +198,7 @@ export default function GeneratePage() {
                 <select
                   value={formData.tone}
                   onChange={(e) => setFormData({ ...formData, tone: e.target.value })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  style={{ color: "black" }}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900"
                 >
                   {tones.map((tone) => (
                     <option key={tone.value} value={tone.value}>
@@ -188,8 +215,7 @@ export default function GeneratePage() {
                 <select
                   value={formData.length}
                   onChange={(e) => setFormData({ ...formData, length: e.target.value })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  style={{ color: "black" }}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-gray-900"
                 >
                   {lengths.map((length) => (
                     <option key={length.value} value={length.value}>
@@ -235,10 +261,25 @@ export default function GeneratePage() {
             </h2>
 
             {generatedContent && (
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={handleGenerateImage}
+                  disabled={imageLoading}
+                  className="px-4 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 flex items-center gap-2 disabled:opacity-50"
+                  title="Generate an AI Image for this"
+                >
+                  {imageLoading ? "🎨..." : "🎨 Image"}
+                </button>
+                <button
+                  onClick={handleDownload}
+                  className="px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 flex items-center gap-2"
+                  title="Download as .txt"
+                >
+                  <span>💾</span> Save
+                </button>
                 <button
                   onClick={handleCopy}
-                  className="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 flex items-center gap-2"
+                  className="px-4 py-2 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 flex items-center gap-2"
                 >
                   <span>📋</span> Copy
                 </button>
@@ -246,10 +287,16 @@ export default function GeneratePage() {
             )}
           </div>
 
-          <div className="h-[500px] overflow-y-auto border border-gray-200 rounded-lg p-4">
+          <div className="h-[600px] overflow-y-auto border border-gray-200 rounded-lg p-6 bg-gray-50 shadow-inner">
             {generatedContent ? (
-              <div className="prose max-w-none">
-                <div className="whitespace-pre-wrap">{generatedContent}</div>
+              <div className="prose max-w-none text-gray-900 font-sans">
+                {generatedImage && (
+                  <div className="mb-6 rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-white">
+                    <img src={generatedImage} alt="AI Generated Graphic" className="w-full h-auto" />
+                  </div>
+                )}
+
+                <div className="whitespace-pre-wrap leading-relaxed text-lg" style={{ color: "#1a202c" }}>{generatedContent}</div>
               </div>
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-gray-400">

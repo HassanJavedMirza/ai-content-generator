@@ -8,6 +8,7 @@
         "start": "next start"
     },
     "dependencies": {
+        "@huggingface/inference": "^4.13.12",
         "@prisma/client": "5.16.2",
         "@tailwindcss/postcss": "^4.1.18",
         "autoprefixer": "^10.4.24",
