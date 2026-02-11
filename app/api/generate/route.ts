@@ -47,14 +47,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!process.env.HUGGINGFACE_API_KEY) {
+    const hfKey = process.env.HUGGINGFACE_API_KEY || process.env.HF_TOKEN || process.env.HF_API_KEY;
+
+    if (!hfKey) {
       return NextResponse.json(
-        { error: "HUGGINGFACE_API_KEY is not configured. If this is a live server, please add it to your environment variables (e.g. in Vercel settings)." },
+        { error: "Hugging Face API key is not configured. We checked HUGGINGFACE_API_KEY, HF_TOKEN, and HF_API_KEY. Please ensure one is set in Vercel." },
         { status: 500 }
       );
     }
 
-    const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
+    const hf = new HfInference(hfKey);
 
     const systemPrompt = `You are a professional content writer. Generate ${type || "blog"} content in a ${tone || "professional"} tone. 
 Make it ${length || "medium"} length. Be creative, engaging, and informative. Do not repeat the instruction in your output.`;
